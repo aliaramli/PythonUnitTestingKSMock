@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from unittest.mock import patch
+from unittest.mock import patch, create_autospec
 import __init__
 from artool.analysis.holiday import Holiday
 
@@ -40,6 +40,50 @@ class TestMockHolidayModule(TestCase):
         """
         print(self.holiday.get_holiday("2024", "JP"),
               len(self.holiday.get_holiday("2024", "JP")))
+
+    def test_mock_as_patch_context_manager(self):
+        """_summary_
+        """
+        ret = [{
+            'date': '2024-01-01', 'localName': '元日',
+            'name': "New Year's Day", 'countryCode': 'JP',
+            'fixed': False, 'global': True, 'counties': None, 'launchYear': None, 'types': ['Public']
+        }]
+        with patch.object(Holiday, 'get_holiday', return_value=ret) as mock_method:
+            thing = Holiday
+            # patching mock / creating mock function does not validate the passed parameter.
+            thing.get_holiday("2024", "MY", 1)
+            thing.get_holiday("2024", "JP")
+            # QUIZ
+            # b = Holiday
+            # b.get_holiday("2024", "MY")
+
+        mock_method.assert_called_with("2024", "JP")
+        self.assertEqual(mock_method.return_value, ret)
+
+    def test_mock_as_patch_dict(self):
+        """_summary_
+        """
+        foo = {'key': 'value'}
+        original = foo.copy()
+        with patch.dict(foo, {'newkey': 'newvalue'}, clear=True):
+            assert foo == {'newkey': 'newvalue'}
+        assert foo == original
+
+    def test_mock_create_autospec_valid(self):
+        """_summary_
+        """
+        mock_function = create_autospec(
+            self.holiday.get_holiday, return_value="No holiday")
+        mock_function("2024", "JP")
+        mock_function.assert_called_once_with("2024", "JP")
+
+    def test_mock_create_autospec_invalid(self):
+        """_summary_
+        """
+        mock_function = create_autospec(
+            self.holiday.get_holiday, return_value="No holiday")
+        mock_function("tiputipu")
 
     def tearDown(self):
         del self.holiday

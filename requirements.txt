@@ -1,2 +1,2 @@
-unittest
-certifi
+2.31.0==requests
+2023.7.22==certifi                 
