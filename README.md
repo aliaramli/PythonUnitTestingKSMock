@@ -3,7 +3,9 @@
 Run the unit testing code from project code root.
 
 Intall the required external librarys 
+```
 pip install -r requirements.txt
+```
 
 Using command line
 python -m unittest test_module.TestClass.test_method 
